@@ -7,6 +7,36 @@ on:
     branches: [ "main" ]
 
 jobs:
+  lint:
+    name: Lint (backend & frontend)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Lint backend
+      - name: Install backend deps
+        working-directory: backend
+        run: npm install
+
+      - name: Lint backend
+        working-directory: backend
+        run: npm run lint
+
+      # Lint frontend
+      - name: Install frontend deps
+        working-directory: frontend
+        run: npm install
+
+      - name: Lint frontend
+        working-directory: frontend
+        run: npm run lint
+
   backend:
     name: Backend - tests
     runs-on: ubuntu-latest
@@ -54,32 +84,21 @@ jobs:
       - name: Build frontend
         run: npm run build
 
-  lint:
-    name: Lint (backend & frontend)
+  deploy-to-render:
+    name: 🚀 Deploy to Render
     runs-on: ubuntu-latest
+    needs: frontend
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: 📦 Deploy backend to Render
+        run: |
+          curl -X POST \
+            -H "Accept: application/json" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            https://api.render.com/v1/services/srv-backend-d665nri48b3s73emb0ng/deploys
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-
-      # Lint backend
-      - name: Install backend deps
-        working-directory: backend
-        run: npm install
-
-      - name: Lint backend
-        working-directory: backend
-        run: npm run lint
-
-      # Lint frontend
-      - name: Install frontend deps
-        working-directory: frontend
-        run: npm install
-
-      - name: Lint frontend
-        working-directory: frontend
-        run: npm run lint
+      - name: 🌐 Deploy frontend to Render
+        run: |
+          curl -X POST \
+            -H "Accept: application/json" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            https://api.render.com/v1/services/srv-frontend-d665pebh46gs73ahasp0/deploys
