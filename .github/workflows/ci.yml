@@ -10,6 +10,7 @@ jobs:
   backend:
     name: Backend - tests
     runs-on: ubuntu-latest
+    needs: lint
     defaults:
       run:
         working-directory: backend
@@ -52,3 +53,33 @@ jobs:
 
       - name: Build frontend
         run: npm run build
+
+  lint:
+    name: Lint (backend & frontend)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Lint backend
+      - name: Install backend deps
+        working-directory: backend
+        run: npm install
+
+      - name: Lint backend
+        working-directory: backend
+        run: npm run lint
+
+      # Lint frontend
+      - name: Install frontend deps
+        working-directory: frontend
+        run: npm install
+
+      - name: Lint frontend
+        working-directory: frontend
+        run: npm run lint
