@@ -16,7 +16,7 @@ function App() {
     status: "todo",
   });
 
-  // Charger les projets et les tâches au démarrage
+  // Charger projets + tâches
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -29,7 +29,7 @@ function App() {
         ]);
 
         if (!projectsRes.ok || !tasksRes.ok) {
-          throw new Error("Erreur de récupération des données");
+          throw new Error("Erreur récupération données");
         }
 
         const projectsData = await projectsRes.json();
@@ -81,13 +81,12 @@ function App() {
       });
 
       if (!response.ok) {
-        throw new Error("Erreur lors de la création de la tâche.");
+        throw new Error("Erreur création tâche");
       }
 
       const newTask = await response.json();
       setTasks((prev) => [...prev, newTask]);
 
-      // Reset formulaire
       setForm({
         title: "",
         projectId: "",
@@ -102,76 +101,51 @@ function App() {
   };
 
   return (
-    <div
-      style={{
-        fontFamily: "system-ui, Arial, sans-serif",
-        padding: "1.5rem",
-        maxWidth: "900px",
-        margin: "0 auto",
-      }}
-    >
-      <h1>DevOps Tasks Board</h1>
+    <div className="app-container">
+      <h1>DevOps Tasks Board - Render</h1>
 
-      <p style={{ color: "#555" }}>
+      <p style={{ color: "#9da7b3" }}>
         Mini application pédagogique pour suivre les tâches DevOps / DevSecOps
         d&apos;un projet.
       </p>
 
-      <div
-        style={{
-          margin: "1rem 0",
-          padding: "0.75rem",
-          background: "#f5f5f5",
-          borderRadius: "8px",
-        }}
-      >
+      <div className="api-box">
         <strong>Backend API :</strong> <code>{API_URL}</code>
       </div>
 
       {loading && <p>Chargement des données...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="error">{error}</p>}
 
-      {/* Formulaire de création de tâche */}
-      <section style={{ marginTop: "1.5rem", marginBottom: "2rem" }}>
+      {/* FORMULAIRE */}
+      <section className="card" style={{ marginTop: "1.5rem", marginBottom: "2rem" }}>
         <h2>Ajouter une nouvelle tâche</h2>
 
-        <form
-          onSubmit={handleSubmit}
-          style={{ display: "grid", gap: "0.75rem", maxWidth: "500px" }}
-        >
+        <form onSubmit={handleSubmit}>
           <div>
-            <label>
-              Titre de la tâche
-              <br />
-              <input
-                type="text"
-                name="title"
-                value={form.title}
-                onChange={handleChange}
-                style={{ width: "100%", padding: "0.4rem" }}
-                placeholder="Ex : Ajouter un test d'intégration"
-              />
-            </label>
+            <label>Titre de la tâche</label>
+            <input
+              type="text"
+              name="title"
+              value={form.title}
+              onChange={handleChange}
+              placeholder="Ex : Ajouter un test d'intégration"
+            />
           </div>
 
           <div>
-            <label>
-              Projet
-              <br />
-              <select
-                name="projectId"
-                value={form.projectId}
-                onChange={handleChange}
-                style={{ width: "100%", padding: "0.4rem" }}
-              >
-                <option value="">-- Sélectionner un projet --</option>
-                {projects.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <label>Projet</label>
+            <select
+              name="projectId"
+              value={form.projectId}
+              onChange={handleChange}
+            >
+              <option value="">-- Sélectionner un projet --</option>
+              {projects.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div
@@ -182,128 +156,75 @@ function App() {
             }}
           >
             <div>
-              <label>
-                Type
-                <br />
-                <select
-                  name="type"
-                  value={form.type}
-                  onChange={handleChange}
-                  style={{ width: "100%", padding: "0.4rem" }}
-                >
-                  <option value="général">Général</option>
-                  <option value="ci/cd">CI/CD</option>
-                  <option value="sécurité">Sécurité</option>
-                  <option value="infra">Infra</option>
-                </select>
-              </label>
+              <label>Type</label>
+              <select name="type" value={form.type} onChange={handleChange}>
+                <option value="général">Général</option>
+                <option value="ci/cd">CI/CD</option>
+                <option value="sécurité">Sécurité</option>
+                <option value="infra">Infra</option>
+              </select>
             </div>
 
             <div>
-              <label>
-                Priorité
-                <br />
-                <select
-                  name="priority"
-                  value={form.priority}
-                  onChange={handleChange}
-                  style={{ width: "100%", padding: "0.4rem" }}
-                >
-                  <option value="normale">Normale</option>
-                  <option value="haute">Haute</option>
-                  <option value="basse">Basse</option>
-                </select>
-              </label>
+              <label>Priorité</label>
+              <select
+                name="priority"
+                value={form.priority}
+                onChange={handleChange}
+              >
+                <option value="normale">Normale</option>
+                <option value="haute">Haute</option>
+                <option value="basse">Basse</option>
+              </select>
             </div>
 
             <div>
-              <label>
-                Statut
-                <br />
-                <select
-                  name="status"
-                  value={form.status}
-                  onChange={handleChange}
-                  style={{ width: "100%", padding: "0.4rem" }}
-                >
-                  <option value="todo">À faire</option>
-                  <option value="doing">En cours</option>
-                  <option value="done">Terminé</option>
-                </select>
-              </label>
+              <label>Statut</label>
+              <select
+                name="status"
+                value={form.status}
+                onChange={handleChange}
+              >
+                <option value="todo">À faire</option>
+                <option value="doing">En cours</option>
+                <option value="done">Terminé</option>
+              </select>
             </div>
           </div>
 
-          <button
-            type="submit"
-            style={{
-              padding: "0.5rem 1rem",
-              background: "#0052cc",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-          >
-            Ajouter la tâche
-          </button>
+          <button type="submit">Ajouter la tâche</button>
         </form>
       </section>
 
-      {/* Liste des tâches */}
-      <section>
+      {/* LISTE */}
+      <section className="card">
         <h2>Liste des tâches</h2>
 
         {tasks.length === 0 ? (
           <p>Aucune tâche pour le moment.</p>
         ) : (
-          <ul
-            style={{
-              listStyle: "none",
-              padding: 0,
-              display: "grid",
-              gap: "0.75rem",
-            }}
-          >
+          <ul className="task-list">
             {tasks.map((task) => {
               const project = projects.find((p) => p.id === task.projectId);
 
               return (
-                <li
-                  key={task.id}
-                  style={{
-                    border: "1px solid #ddd",
-                    borderRadius: "6px",
-                    padding: "0.75rem",
-                    background: "#fff",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <strong>{task.title}</strong>
-                    <span style={{ fontSize: "0.85rem", color: "#666" }}>
-                      Statut : <em>{task.status}</em>
+                <li key={task.id} className="task-card">
+                  <div className="task-header">
+                    <span className="task-title">{task.title}</span>
+
+                    <span className={`badge ${task.status}`}>
+                      {task.status}
                     </span>
                   </div>
 
-                  <div style={{ fontSize: "0.9rem", marginTop: "0.25rem" }}>
+                  <div className="task-meta">
                     Projet :{" "}
                     <strong>
                       {project ? project.name : `#${task.projectId}`}
                     </strong>
                   </div>
 
-                  <div
-                    style={{
-                      fontSize: "0.85rem",
-                      marginTop: "0.25rem",
-                      color: "#555",
-                    }}
-                  >
+                  <div className="task-meta">
                     Type : {task.type} — Priorité : {task.priority}
                   </div>
                 </li>
